@@ -1,8 +1,13 @@
-# rnsavinelli's scripts
+# .scripts
 
-A collection of all of my scripts.
-
------------------------------------------
+To index all the scripts to your $PATH variable run:
+```
+git clone https://github.com/rnsavinelli/.scripts ~/.scripts
+```
+Then edit your `.bash_profile` file and add:
+```
+export PATH=$PATH:$HOME/.scripts/
+```
 
 ## mount-andriod
 
