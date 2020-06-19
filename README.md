@@ -1,14 +1,17 @@
-# rnsavinelli's scripts
+# .scripts
 
-A collection of all of my scripts.
-
------------------------------------------
+To index all the scripts to your $PATH variable run:
+```
+git clone https://github.com/rnsavinelli/.scripts ~/.scripts
+```
+Then edit your `.bash_profile` file and add:
+```
+export PATH=$PATH:$HOME/.scripts/
+```
 
 ## mount-andriod
 
 This script's target was Linux computers so it uses the Linux version of `simple-mtpfs`.
-
-## How to make it work
 
 This script will mount your device to the `~/.mnt/` folder which, if it does not exist, will
 be created.
@@ -25,7 +28,7 @@ umount ~/.mnt/
 
 ## battery-notification
 
-For the battery notification script to work in the background a cronjob could be configured.
+For the battery notification script to work in the background a cronjob or an ACPI event could be configured.
 
 An entry template would be:
  ```
