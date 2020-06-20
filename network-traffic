@@ -10,7 +10,7 @@
 
 device="wlp3s0"
 logfile="${XDG_CACHE_HOME:-$HOME/.cache}/netlog"
-historyfile="${XDG_CACHE_HOME:-$HOME/.cache}/netloghistory"
+loghistfile="${XDG_CACHE_HOME:-$HOME/.cache}/netloghistory"
 prevdata="$(cat "$logfile")"
 
 rxcurrent="$(($(paste -d '+' /sys/class/net/$device/statistics/rx_bytes)))"
@@ -32,7 +32,7 @@ notify() {
 store(){
     echo \
     "$(printf "$(((rxcurrent-${prevdata%% *})/1024)) \
-    $(((txcurrent-${prevdata##* })/1024))")" >> $historyfile
+    $(((txcurrent-${prevdata##* })/1024))")" >> $loghistfile
 }
 
 case "$1" in
