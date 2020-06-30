@@ -63,7 +63,8 @@ case "$1" in
     -s*) history_store;;
     -x*) history_clear;;
     # Cache
-	-u*) cache_update;;
+    -u*) cache_update;;
+    # Usage
 	*) printf "Usage: network-traffic [OPTION]\
         \n\
         \n\t-n: notify network traffic since last cache update.\
