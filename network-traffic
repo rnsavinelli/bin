@@ -18,7 +18,7 @@ prevdata="$(cat "$logfile")"
 rxcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/rx_bytes)))"
 txcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/tx_bytes)))"
 
-# If cache has been updated the deltarx and deltatx will be calculated
+# If cache has been updated deltarx and deltatx will be calculated
 # on function cache_verify. See lines 14 and 15.
 deltarx=""
 deltatx=""
