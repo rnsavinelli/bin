@@ -22,7 +22,8 @@ deltarx="$()"
 deltatx="$()"
 
 _usage_info() {
-    printf "Usage: network-traffic [OPTION]\
+    printf \
+        "Usage: network-traffic [OPTION]\
         \n\
         \n\t-n: notify network traffic since last cache update.\
         \n\t-p: print network traffic since last cache update to standard output.\
@@ -45,10 +46,10 @@ _cache_verify() {
     touch $logfile
 
     if [ "$(du -s $logfile | awk '{print $1}')" -eq "0" ]; then
-        echo -e \
-            "WARNING: Cache should be updated before performing this operation\n" \
-            "\t for the first time. To solve this issue, run:\n\n" \
-            "\t network-traffic -u\n" 1>&2
+        printf \
+            "WARNING: Cache should be updated before performing this operation\
+            \n\t for the first time. To solve this issue, run:\n \
+            \n\t network-traffic -u\n\n" 1>&2
         _usage_info
         exit 1
     fi
