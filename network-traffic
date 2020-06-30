@@ -13,13 +13,15 @@ interface="wlp3s0"
 logfile="${XDG_CACHE_HOME:-$HOME/.cache}/netlog"
 loghistfile="${XDG_CACHE_HOME:-$HOME/.cache}/netloghistory"
 
-prevdata="$(cat "$logfile")"
+# If cache has been updated prev data will be retrieved from $logfile.
+# See cache_verify() on line 41 for more information;
+prevdata=""
 
 rxcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/rx_bytes)))"
 txcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/tx_bytes)))"
 
-# If cache has been updated deltarx and deltatx will be calculated on function cache_verify().
-# See lines 51 and 52.
+# If cache has been updated deltarx and deltatx will be calculated.
+# See cache_verify() on line 41 for more information;
 deltarx=""
 deltatx=""
 
@@ -47,6 +49,8 @@ cache_verify() {
         print_usage 1>&2
         exit 1
     fi
+
+    prevdata="$(cat "$logfile")"
 
     deltarx="$((($rxcurrent-${prevdata%% *})/1024))"
     deltatx="$((($txcurrent-${prevdata##* })/1024))"
