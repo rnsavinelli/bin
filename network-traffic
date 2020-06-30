@@ -8,39 +8,70 @@
 # If 'network-traffic -u' is run every hour, 'network-traffic -n' will show
 # network traffic per hour.
 
-device="wlp3s0"
+interface="wlp3s0"
 logfile="${XDG_CACHE_HOME:-$HOME/.cache}/netlog"
 loghistfile="${XDG_CACHE_HOME:-$HOME/.cache}/netloghistory"
 prevdata="$(cat "$logfile")"
 
-rxcurrent="$(($(paste -d '+' /sys/class/net/$device/statistics/rx_bytes)))"
-txcurrent="$(($(paste -d '+' /sys/class/net/$device/statistics/tx_bytes)))"
+rxcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/rx_bytes)))"
+txcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/tx_bytes)))"
 
-update_cache() {
+deltarx="$((($rxcurrent-${prevdata%% *})/1024))"
+deltatx="$((($txcurrent-${prevdata##* })/1024))"
+
+cache_update() {
     touch $logfile
     truncate --size=0 $logfile
-    echo "$rxcurrent $txcurrent" > "$logfile"
-}
 
-notify() {
-    notify-send "Network traffic update" \
-    "$(printf "$(echo $device)\n\nReceived: %s kB\nTransmitted: %s kB\\n" \
-	"$(((rxcurrent-${prevdata%% *})/1024))" \
-    "$(((txcurrent-${prevdata##* })/1024))")"
-}
-
-store(){
     echo \
-    "$(printf "$(((rxcurrent-${prevdata%% *})/1024)) \
-    $(((txcurrent-${prevdata##* })/1024))")" >> $loghistfile
+        "$rxcurrent $txcurrent" > "$logfile"
+}
+
+history_clear() {
+    touch $loghistfile
+    truncate --size=0 $loghistfile
+}
+
+history_store(){
+    touch $loghistfile
+
+    echo \
+        "$deltarx $deltatx" >> $loghistfile
+}
+
+history_print() {
+    cat $loghistfile
+}
+
+data_print(){
+    printf \
+        "Interface: $(echo $interface)\n\nReceived: %s kB\nTransmitted: %s kB\n" \
+        "$deltarx" "$deltatx"
+}
+
+data_notify() {
+    notify-send \
+        "Network traffic update" "$(data_print)"
 }
 
 case "$1" in
-	-n*) notify;;
-	-u*) update_cache;;
-    -s*) store;;
+    # Current data
+    -n*) data_notify;;
+    -p*) data_print;;
+    # History
+    -h*) history_print;;
+    -s*) history_store;;
+    -x*) history_clear;;
+    # Cache
+	-u*) cache_update;;
 	*) printf "Usage: network-traffic [OPTION]\
+        \n\
         \n\t-n: notify network traffic since last cache update.\
-        \n\t-u: update network traffic cache.\
-        \n\t-s: store network traffic data.\n";;
+        \n\t-p: print network traffic since last cache update to standard output.\
+        \n\
+        \n\t-h: print all network traffic history.\
+        \n\t-s: store network traffic data to the history file.\
+        \n\t-x: clear network traffic history.\
+        \n\
+        \n\t-u: update network traffic cache.\n";;
 esac
