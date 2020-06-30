@@ -13,19 +13,15 @@ interface="wlp3s0"
 logfile="${XDG_CACHE_HOME:-$HOME/.cache}/netlog"
 loghistfile="${XDG_CACHE_HOME:-$HOME/.cache}/netloghistory"
 
-# If cache has been updated prev data will be retrieved from $logfile.
-# See cache_verify() on line 41 for more information.
-prevdata=""
-
 rxcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/rx_bytes)))"
 txcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/tx_bytes)))"
 
 # If cache has been updated deltarx and deltatx will be calculated.
-# See cache_verify() on line 41 for more information.
-deltarx=""
-deltatx=""
+# See _get_traffic on line 37 for more information.
+deltarx="$()"
+deltatx="$()"
 
-print_usage() {
+_usage_info() {
     printf "Usage: network-traffic [OPTION]\
         \n\
         \n\t-n: notify network traffic since last cache update.\
@@ -38,25 +34,29 @@ print_usage() {
         \n\t-u: update network traffic cache.\n"
 }
 
-cache_verify() {
+_get_traffic() {
+    local prevdata="$(cat "$logfile")"
+
+    deltarx="$((($rxcurrent-${prevdata%% *})/1024))"
+    deltatx="$((($txcurrent-${prevdata##* })/1024))"
+}
+
+_cache_verify() {
     touch $logfile
 
     if [[ "$(du -s $logfile | awk '{print $1}')" -eq "0" ]]; then
         echo -e \
             "WARNING: Cache should be updated before performing this operation\n" \
             "\t for the first time. To solve this issue, run:\n\n" \
-            "\t network-traffic -u\n"
-        print_usage 1>&2
+            "\t network-traffic -u\n" 1>&2
+        _usage_info
         exit 1
     fi
 
-    prevdata="$(cat "$logfile")"
-
-    deltarx="$((($rxcurrent-${prevdata%% *})/1024))"
-    deltatx="$((($txcurrent-${prevdata##* })/1024))"
+    _get_traffic
 }
 
-cache_update() {
+_cache_update() {
     touch $logfile
     truncate --size=0 $logfile
 
@@ -64,44 +64,44 @@ cache_update() {
         "$rxcurrent $txcurrent" > "$logfile"
 }
 
-history_clear() {
+_history_clear() {
     touch $loghistfile
     truncate --size=0 $loghistfile
 }
 
-history_store(){
+_history_store(){
     touch $loghistfile
 
     echo \
         "$deltarx $deltatx" >> $loghistfile
 }
 
-history_print() {
+_history_print() {
     touch $loghistfile
     cat $loghistfile
 }
 
-data_print(){
+_traffic_print(){
     printf \
         "Interface: $(echo $interface)\n\nReceived: %s kB\nTransmitted: %s kB\n" \
         "$deltarx" "$deltatx"
 }
 
-data_notify() {
+_traffic_notify() {
     notify-send \
-        "Network traffic update" "$(data_print)"
+        "Network traffic update" "$(_traffic_print)"
 }
 
 case "$1" in
     # Current data
-    -n*) cache_verify && data_notify;;
-    -p*) cache_verify && data_print;;
+    -n*) _cache_verify && _traffic_notify;;
+    -p*) _cache_verify && _traffic_print;;
     # History
-    -h*) history_print;;
-    -s*) cache_verify && history_store;;
-    -x*) history_clear;;
+    -h*) _history_print;;
+    -s*) _cache_verify && _history_store;;
+    -x*) _history_clear;;
     # Cache
-    -u*) cache_update;;
+    -u*) _cache_update;;
     # Usage
-    *) print_usage;;
+    *) _usage_info;;
 esac
