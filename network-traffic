@@ -14,14 +14,14 @@ logfile="${XDG_CACHE_HOME:-$HOME/.cache}/netlog"
 loghistfile="${XDG_CACHE_HOME:-$HOME/.cache}/netloghistory"
 
 # If cache has been updated prev data will be retrieved from $logfile.
-# See cache_verify() on line 41 for more information;
+# See cache_verify() on line 41 for more information.
 prevdata=""
 
 rxcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/rx_bytes)))"
 txcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/tx_bytes)))"
 
 # If cache has been updated deltarx and deltatx will be calculated.
-# See cache_verify() on line 41 for more information;
+# See cache_verify() on line 41 for more information.
 deltarx=""
 deltatx=""
 
@@ -103,5 +103,5 @@ case "$1" in
     # Cache
     -u*) cache_update;;
     # Usage
-	*) print_usage;;
+    *) print_usage;;
 esac
