@@ -44,7 +44,7 @@ _get_traffic() {
 _cache_verify() {
     touch $logfile
 
-    if [[ "$(du -s $logfile | awk '{print $1}')" -eq "0" ]]; then
+    if [ "$(du -s $logfile | awk '{print $1}')" -eq "0" ]; then
         echo -e \
             "WARNING: Cache should be updated before performing this operation\n" \
             "\t for the first time. To solve this issue, run:\n\n" \
