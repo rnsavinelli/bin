@@ -1,23 +1,29 @@
 #!/bin/sh
-
+#
 # Network traffic monitoring script.
-# Stores how much data has been received (RX) or transmitted (TX) by reading
-# system statistics.
-# Notifies delta RX and delta TX since the previous time the cache was updated.
+#
+# Stores and Prints how much data has been received (RX) or transmitted (TX)
+# by reading system statistics.
+# Calculates the delta RX and the delta TX since the previous time the cache
+# was updated to inform the network traffic.
 #
 # If 'network-traffic -u' is run every hour, 'network-traffic -n' will show
 # network traffic per hour.
+#
+# (c) 2020 Savinelli Roberto Nicolás <rsavinelli@est.frba.utn.edu.ar>
 
+######################## network-traffic cofigurations ########################
 interface="wlp3s0"
 
 logfile="${XDG_CACHE_HOME:-$HOME/.cache}/netlog"
 loghistfile="${XDG_CACHE_HOME:-$HOME/.cache}/netloghistory"
+###############################################################################
 
 rxcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/rx_bytes)))"
 txcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/tx_bytes)))"
 
 # If cache has been updated deltarx and deltatx will be calculated.
-# See _get_traffic on line 37 for more information.
+# See _get_traffic on line 44 for more information.
 deltarx="$()"
 deltatx="$()"
 
