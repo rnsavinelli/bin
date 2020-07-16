@@ -24,10 +24,11 @@ txcurrent="$(($(paste -d '+' /sys/class/net/$interface/statistics/tx_bytes)))"
 
 # If cache has been updated deltarx and deltatx will be calculated.
 # See _get_traffic on line 44 for more information.
-deltarx="$()"
-deltatx="$()"
+deltarx="0"
+deltatx="0"
 
 _usage_info() {
+    printf "network-traffic v1.0 Network Traffic Monitoring script.\\nCopyright (c) 2020 R Nicolás Savinelli <rsavinelli@est.frba.utn.edu.ar>\\n\\n"
     printf \
         "Usage: network-traffic [OPTION]\
         \n\
@@ -59,8 +60,6 @@ _cache_verify() {
         _usage_info
         exit 1
     fi
-
-    _get_traffic
 }
 
 _cache_update() {
@@ -101,11 +100,11 @@ _traffic_notify() {
 
 case "$1" in
     # Current data
-    -n*) _cache_verify && _traffic_notify;;
-    -p*) _cache_verify && _traffic_print;;
+    -n*) _cache_verify && _get_traffic && _traffic_notify;;
+    -p*) _cache_verify && _get_traffic && _traffic_print;;
     # History
     -h*) _history_print;;
-    -s*) _cache_verify && _history_store;;
+    -s*) _cache_verify && _get_traffic && _history_store;;
     -x*) _history_clear;;
     # Cache
     -u*) _cache_update;;
