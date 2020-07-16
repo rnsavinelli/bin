@@ -36,7 +36,7 @@ else
 		echo "Custom host record was added."
 		echo "Updating old configuration..."
 		mv -u $hosts_temp /etc/hosts
-        chmod +r /etc/hosts
+        	chmod +r /etc/hosts
 		echo "/etc/hosts file has been updated."
 	fi
 
