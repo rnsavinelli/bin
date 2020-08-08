@@ -1,5 +1,4 @@
 # .scripts
-```
 To index all the scripts to your $PATH variable, edit your `.bash_profile` file and add:
 ```
 export PATH=$PATH:$HOME/.scripts/
