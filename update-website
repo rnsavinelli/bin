@@ -1,0 +1,3 @@
+#!/bin/sh
+
+rsync -urvP --delete-after /home/rnsavinelli/Documents/github/rnsavinelli.github.io/ root@savinelli.com.ar:/var/www/html/

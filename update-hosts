@@ -9,7 +9,7 @@
 # URL to the unified hosts file.
 # It is highly advisable to use one of StevenBlack's hosts files.
 # For more information visit: https://github.com/StevenBlack/hosts
-hosts_file="https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling/hosts"
+hosts_file="https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts"
 ################################################################################
 
 hosts_temp=$(mktemp)
