@@ -21,7 +21,6 @@ if [ "$options" == "0" ]; then
     exit 1
 
 else
-    mkdir -p ~/.mnt/
     echo "Available devices:"
     simple-mtpfs --list-devices
 
@@ -40,15 +39,15 @@ else
 	done
     fi
 
-    echo "Mounting device number $selection to the ~/.mnt/ directory"
-    simple-mtpfs --device $selection ~/.mnt/
+    echo "Mounting device number $selection to the /mnt directory"
+    simple-mtpfs --device $selection /mnt
 
     if [ "$?" == "1" ]; then
 	echo -e "WARNING: Device could NOT be mounted\nExiting script." 1>&2
         exit 1
 
     else
-	echo -e "Device mounted successfully\nTip: Unmount your device by running $ umount ~/.mnt/"
-	# notify-send "Android device mounted to ~/.mnt/" "Unmount your device by running $ umount ~/.mnt/"
+	echo -e "Device mounted successfully\nTip: Unmount your device by running $ umount /mnt"
+	notify-send "Android device mounted to /mnt" "Unmount your device by running $ umount /mnt"
     fi
 fi
