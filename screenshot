@@ -1,0 +1,11 @@
+# !/bin/bash
+# Takes a screenshot
+
+sleep 1
+
+__execution_message=$(shotgun 2>&1)
+
+if  [ $? -eq 0 ]; then
+    __file_name=$(echo $__execution_message | awk 'NF > 1 { print $NF }' 2>&1)
+    notify-send "Your screenshot is ready!" "Output stored to $__file_name"
+fi

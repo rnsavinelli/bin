@@ -1,0 +1,11 @@
+#!/bin/bash
+volume_level=$(pamixer --get-volume)
+mute_status=$(pamixer --get-mute)
+
+if [[ $volume_level -eq 0 || $mute_status == true ]]; then
+    echo "  0%"
+elif [ $volume_level -lt 50 ]; then
+    echo "  $volume_level%"
+else
+    echo "  $volume_level%"
+fi

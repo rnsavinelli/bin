@@ -1,0 +1,103 @@
+#!/bin/sh
+
+#pomodoro [-s [profile]] [-k] [-g]
+#-s [PROFILE], starts a timer given a configured profile.
+#-k, stops the timer.
+#-g, prints the timer status.
+
+usage_info() {
+    printf \
+        "pomodoro [-s [profile]] [-k] [-g]\
+        \n\nDESCRIPTION:\
+        \nThis command uses the ~/.config/pomodoro/config file to determine timer lengths\
+        \nexpressed in seconds and the next timer to move to after the timer is done.\
+        \n\
+        \nSample config file content:\
+        \n\tWork 1500 Break\
+        \n\tBreak 300 Work\
+        \n\
+        \nOPTIONS:\
+        \n\t-s [PROFILE], starts a timer given a configured profile.\
+        \n\t-k, stops the timer.\
+        \n\t-g, prints the timer status.\n"
+}
+
+remaining() {
+  if [ -e $statusfile ]; then
+    stime=$(cat $statusfile | awk '/start/ {print $2}')
+    time=$(cat $configfile | awk '/'^$(current)' / {print $2}')
+    echo $(($stime - $(date +%s) + $time))
+  fi
+}
+
+current() {
+  ! [ -e $statusfile ] && echo "null" || cat $statusfile | awk '/current/ {print $2}'
+}
+
+next() {
+  cat $configfile | awk '/'$(current)' / {print $3}'
+}
+
+update() {
+  printf "current %s\nstart %s" $1 $(date +%s) > $statusfile
+}
+
+list() {
+  cat $configfile | awk '{print $1}'
+}
+
+configdir="$HOME/.config/pomodoro"
+configfile="$configdir/config"
+statusfile="/tmp/.pomodoro"
+
+# Check for config file, if it doesnt exist, copy the default.
+if ! [ -e $configfile ]; then
+  mkdir -p $configdir
+  echo "study 1500" >> $configfile
+fi
+
+# Set flags for the arguments.
+while getopts ":sgk" opt; do
+  case $opt in
+    s)
+      s=0
+      ;;
+    k)
+      k=0
+      ;;
+    g)
+      g=0
+      ;;
+    \?)
+      exit 1
+  esac
+done
+
+# If no input arguments, show usage info and quit.
+if [ $# -le 0 ]; then
+  usage_info
+  exit 0
+fi
+
+# Handlers.
+if [ $s ]; then
+  profile=$2
+  update $profile
+fi
+
+[ $k ] && rm $statusfile
+
+if [ $g ]; then
+  if [ "$(current)" == "null" ]; then
+      echo "00:00"
+      exit 1
+  fi
+  if [ $(remaining) -le 0 ]; then
+    notify-send -u critical -a "Pomodoro" "Time's up!" "Pomodoro profile: $(current)"
+    paplay "/usr/share/sounds/freedesktop/stereo/complete.oga"
+    update $(next)
+    pomodoro -k
+  else
+      echo $(printf "%02d:%02d" $(($(remaining) / 60)) $(($(remaining) % 60)))
+  fi
+fi

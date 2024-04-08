@@ -1,0 +1,2 @@
+#!/bin/bash
+xdotool click --delay 120000 --repeat 20000 1

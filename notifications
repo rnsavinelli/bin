@@ -1,0 +1,49 @@
+#!/bin/sh
+
+MAX_OPTION_LENGTH=80
+
+history_json="$(dunstctl history)"
+history_items="$(printf '%s' "$history_json" | jq -r '.data[0][] | .appname.data , .summary.data , .body.data | gsub("[\\n]"; "\\n")')"
+# the gsub is to really ensure no escaped new lines in the data lead us to print new lines. New lines in data have to be escaped.
+#(Because) Actual newlines are the field separator essential to the logic of the while loop below, and dmenu further down.
+
+iter=0
+
+IFS='
+'
+while read -r appname; read -r notification_heading; read -r notification_body
+do
+    iter=$((iter+1))
+    
+    body_summary=$(echo $notification_body | tr -d '[\n,\\n,\t]')
+    length_body_summary=$(echo $body_summary | awk '{print length($0)}')
+    length_notification_heading=$(echo $notification_heading | awk '{print length($0)}')
+
+    if [ $(($length_body_summary + $length_notification_heading)) -gt $MAX_OPTION_LENGTH ]; then
+        if [ $appname == "Calendar" ]; then
+            option=$(printf '%04d: [%s] "%s"' "$iter" "$appname" "$notification_heading")
+        else
+            option=$(printf '%04d: [%s] "%s" %s...' "$iter" "$appname" "$notification_heading" "$(echo $body_summary | head -c $(($MAX_OPTION_LENGTH - $length_notification_heading)))")
+        fi
+    else
+        option=$(printf '%04d: [%s] "%s" %s' "$iter" "$appname" "$notification_heading" "$body_summary")
+    fi
+    options="$options$option
+"
+done <<EOF
+$history_items
+EOF
+
+options="$options""Cancel"
+
+result=$(printf '%s' "$options" | dmenu -l 10)
+if [ "$?" -ne 0 ] || [ -z "$result" ] || [ "$result" = "Cancel" ]; then
+    exit
+fi
+
+# Get the internal notification ID
+selection_index=$(($(printf '%s' "$result" | awk '{ print substr($1, 1, length($1)-1) }') - 1))
+notification_id=$(printf '%s' "$history_json" | jq -r .data[][$selection_index].id.data)
+
+# Tell dunst to revive said notification
+dunstctl history-pop $notification_id

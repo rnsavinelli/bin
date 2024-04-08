@@ -1,0 +1,17 @@
+#!/bin/bash
+
+declare -A devices
+
+devices["speakers"]="EC:81:93:EA:B3:A8"
+devices["airpods"]="CC:08:FA:CC:17:41"
+
+if [ ! -z "$1" ] ; then
+    if [ -v devices["$1"] ]; then
+        bluetoothctl -- power on
+        bluetoothctl -- connect $(echo ${devices["$1"]})
+    fi
+else
+    echo "Usage: connect [speakers|airpods]"
+fi
+
+

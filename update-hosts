@@ -31,9 +31,9 @@ else
 	else
 		echo "Creating /etc/hosts.backup file..."
 		mv -u /etc/hosts /etc/hosts.backup
-		echo "Adding \"127.0.1.1 hostname\" custom host record to the new hosts file..."
-		sed -i "/# Custom host records are listed here/ a 127.0.1.1 $(hostname)" $hosts_temp
-		echo "Custom host record was added."
+		#echo "Adding \"127.0.1.1 hostname\" custom host record to the new hosts file..."
+		#sed -i "/# Custom host records are listed here/ a 127.0.1.1 $(hostname)" $hosts_temp
+		#echo "Custom host record was added."
 		echo "Updating old configuration..."
 		mv -u $hosts_temp /etc/hosts
         	chmod +r /etc/hosts

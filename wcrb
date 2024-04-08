@@ -1,4 +1,3 @@
 #!/bin/bash
 
-ffplay -nodisp -i http://audio.wgbh.org:8004/
-
+mpv --no-video https://wgbh-live.streamguys1.com/classical-hi

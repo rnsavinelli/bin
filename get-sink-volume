@@ -1,4 +1,0 @@
-#!/bin/bash
-# Retruns volume level
-
-pamixer --get-volume

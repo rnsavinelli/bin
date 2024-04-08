@@ -1,0 +1,5 @@
+today=$(date '+%-d')
+head=$(cal | head -n1 | xargs)
+body=$(cal | tail -n7 | sed -z "s|$today|<b>$today</b>|1")
+
+dunstify -a Calendar -h string:x-canonical-private-synchronous:calendar "$head" "$body" "" -u NORMAL

@@ -1,4 +1,4 @@
 #!/bin/bash
 # Captures X using ffmpeg
 
-ffmpeg -f x11grab -video_size 1366x768 -framerate 25 -i $DISPLAY -f pulse -i default -c:v libx264 -preset ultrafast -c:a aac ~/screencast.mp4
+ffmpeg -f x11grab -video_size 1920x1080 -framerate 30 -i $DISPLAY -f pulse -i default -c:v libx264 -preset ultrafast -c:a aac ~/screencast.mp4
